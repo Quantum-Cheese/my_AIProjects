@@ -84,7 +84,7 @@ class Takeoff(BaseTask):
             return Wrench(), done
         
     def save_records(self):
-        fileObject = open('/home/robond/catkin_ws/src/RL-Quadcopter/quad_controller_rl/src/quad_controller_rl/tasks/rewards02.txt', 'w') 
+        fileObject = open('/home/robond/catkin_ws/src/RL-Quadcopter/quad_controller_rl/src/quad_controller_rl/tasks/rewards_takeoff_01.txt', 'w') 
         for r in self.total_rewards:
             fileObject.write(str(r)+" ,") 
         fileObject.close()

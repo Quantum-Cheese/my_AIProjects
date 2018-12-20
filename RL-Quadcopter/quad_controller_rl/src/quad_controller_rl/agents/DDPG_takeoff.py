@@ -17,10 +17,10 @@ class DDPG_takeoff(BaseAgent):
         self.action_size = np.prod(self.task.action_space.shape)
 
         # 限制状态和动作空间
-        self.limit_state_size = 3
-        self.limit_action_size = 3
-        self.action_low = self.task.action_space.low[0:3]
-        self.action_high = self.task.action_space.high[0:3]
+        self.limit_state_size = 1
+        self.limit_action_size = 1
+        self.action_low = self.task.action_space.low[2]
+        self.action_high = self.task.action_space.high[2]
 
         # 设定上个动作和状态的初始值:a(t-1)和s(t-1)
         self.last_state = None
@@ -127,13 +127,15 @@ class DDPG_takeoff(BaseAgent):
     """限制状态空间，把task传来的7维状态向量降到3维（只考虑位置）"""
     def preprocess_state(self, raw_state):
         state = np.array([raw_state])
-        return state[:, :3]
+        #return state[:, :3]
+        return state[:,2]
 
     """把3维动作向量扩展到6维（剩下3个维度都补零），以供返回给task"""
 
     def postprocess_action(self, action):
         complete_action = np.zeros((1, self.action_size))  # shape: (6,)
-        complete_action[:, :3] = action + self.noise.sample()  # linear force only
+        #complete_action[:, :3] = action + self.noise.sample()  # linear force only
+        complete_action[:, 2] = action + self.noise.sample()
         return complete_action[0]
 
     """软更新，用local模型的权重更新target模型权重"""

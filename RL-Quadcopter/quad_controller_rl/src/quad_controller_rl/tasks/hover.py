@@ -19,7 +19,7 @@ class Hover(BaseTask):
 
         # Action space: <force_x, .._y, .._z, torque_x, .._y, .._z>
         max_force = 25.0
-        max_torque = 1.0
+        max_torque = 25.0
         self.action_space = spaces.Box(
             np.array([-max_force, -max_force, -max_force, -max_torque, -max_torque, -max_torque]),
             np.array([ max_force,  max_force,  max_force,  max_torque,  max_torque,  max_torque]))
@@ -28,11 +28,6 @@ class Hover(BaseTask):
         # Task-specific parameters
         self.max_duration = 15.0  # secs
         self.target_z = 10.0
-        self.target_x = 0.0
-        self.target_y = 0.0
-        self.target_ox = 0.0
-        self.target_oy = 0.0
-        self.target_oz = 0.0
         self.takeoff_duration = 5.0
 
           # 记录阶段性变量
@@ -51,7 +46,7 @@ class Hover(BaseTask):
             )
 
     def save_records(self):
-        fileObject = open('/home/robond/catkin_ws/src/RL-Quadcopter/quad_controller_rl/src/quad_controller_rl/tasks/rewards05.txt', 'w') 
+        fileObject = open('/home/robond/catkin_ws/src/RL-Quadcopter/quad_controller_rl/src/quad_controller_rl/tasks/rewards_hover_01.txt', 'w') 
         for r in self.total_rewards:
             fileObject.write(str(r)+" ,") 
         fileObject.close()
@@ -64,36 +59,32 @@ class Hover(BaseTask):
 
         done = False
         
-        # 检查位置稳定性
-        reward=-(pose.position.x+pose.position.y+pose.orientation.x+pose.orientation.y+pose.orientation.w)*100
-        
-        # Base action
-        action = np.zeros(6)
+        reward=0
 
         # 在5秒之内，奖励函数的设定跟takeoff一致
+        
         if timestamp<=self.takeoff_duration:
             reward+=-min(abs(self.target_z - pose.position.z),
-                          20.0)  
-            
-            # before target height,apply no torque
-            ac=self.agent.step(state, reward, done)
-            action=np.array([ac[0],ac[1],ac[2],0,0,0])
+                          20.0) 
         else:
-            # 5秒之后如果还不能达到目标高度，起飞失败，结束阶段，并给以较大的惩罚
+            
+            # 5秒之后如果还不能达到目标高度，给以较大的惩罚
             if pose.position.z < self.target_z:
-                reward+=-30
-                done = True
-            # 5秒之后，需要保持高度稳定，如果高度跟目标高度差小于0.5,奖励加30，否则减30
-            if abs(self.target_z - pose.position.z) < 0.5:
+                reward+=-20
+               
+            # 5秒之后，需要保持高度稳定
+            reward+=-abs(self.target_z - pose.position.z)*20
+            
+            # 如果高度跟目标高度差小于1,奖励加30，否则减30
+            if abs(self.target_z - pose.position.z) < 1:
                 reward+=30
             else:
-                reward+=-50
-       
-            action=self.agent.step(state, reward, done)
+                reward+=-30
             # 检查阶段是否结束
             if timestamp>self.max_duration:
                 done=True
-
+                
+        action=self.agent.step(state, reward, done)
 
         if done:
             self.total_rewards.append(self.accumulated_rewards)
