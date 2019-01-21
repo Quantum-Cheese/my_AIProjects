@@ -43,6 +43,8 @@ class DDPG_takeoff(BaseAgent):
 
         # 设定随机探索噪点
         self.noise = OUNoise(self.limit_action_size)
+        
+        self.actions=[]
 
 
     """ 接收task传来的上一个动作a(t-1)引发的R(t)和S(t)，选择当前动作a(t)，并通过学习优化策略"""
@@ -68,13 +70,13 @@ class DDPG_takeoff(BaseAgent):
           
         # 最后返回完整的动作向量
         complete_action = self.postprocess_action(action)
-        #print(complete_action)
+       
         return complete_action
 
     def act(self, state):
         # 调用Actor,把当前状态（向量）作为输入，得到根据当前策略所选择的动作（向量）
         input_state = np.array(state)
-        action = self.local_actor.model.predict(input_state)
+        action = self.local_actor.model.predict(input_state)+ self.noise.sample()
         return action.astype(np.float32)
 
     def learn(self, expriences):
@@ -134,8 +136,7 @@ class DDPG_takeoff(BaseAgent):
 
     def postprocess_action(self, action):
         complete_action = np.zeros((1, self.action_size))  # shape: (6,)
-        #complete_action[:, :3] = action + self.noise.sample()  # linear force only
-        complete_action[:, 2] = action + self.noise.sample()
+        complete_action[:, 2] = action 
         return complete_action[0]
 
     """软更新，用local模型的权重更新target模型权重"""
@@ -146,6 +147,13 @@ class DDPG_takeoff(BaseAgent):
 
         new_weights = self.soft_params * local_weights + (1 - self.soft_params) * target_weights
         target.model.set_weights(new_weights)
+        
+    def save_actions(self):
+        fileObject = open('/home/robond/catkin_ws/src/RL-Quadcopter/quad_controller_rl/src/quad_controller_rl/records/takeoff_rawActions_1.txt', 'w') 
+        for action in self.actions:
+            fileObject.write(str(action)+" ,")
+        fileObject.close()
+        
 
   
 

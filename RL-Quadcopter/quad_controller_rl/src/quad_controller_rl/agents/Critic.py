@@ -1,4 +1,4 @@
-from keras import layers, models, optimizers
+from keras import layers, models, optimizers,regularizers,initializers
 from keras import backend as K
 import numpy as np
 
@@ -24,26 +24,28 @@ class Critic:
         states = layers.Input(shape=(self.state_size,), name='states')
         actions = layers.Input(shape=(self.action_size,), name='actions')
 
+        reg=regularizers.l2(0.00001)
+        
         # state子网络的隐藏层
-        net_states = layers.Dense(units=32, activation='relu')(states)
-        net_states = layers.Dense(units=64, activation='relu')(net_states)
+        net_states = layers.Dense(units=16, activation='relu',kernel_regularizer=reg)(states)
+        net_states = layers.Dense(units=16, activation='relu',kernel_regularizer=reg)(net_states)
 
         # action自网络的隐藏层
-        net_actions = layers.Dense(units=32, activation='relu')(actions)
-        net_actions = layers.Dense(units=64, activation='relu')(net_actions)
+        net_actions = layers.Dense(units=16, activation='relu',kernel_regularizer=reg)(actions)
+        net_actions = layers.Dense(units=16, activation='relu',kernel_regularizer=reg)(net_actions)
 
         # 合并state 和 action 子网络
         net = layers.Add()([net_states, net_actions])
         net = layers.Activation('relu')(net)
 
         # 输出层，输出 Q 值
-        Q_values = layers.Dense(units=1, name='q_values')(net)
+        Q_values = layers.Dense(units=1,kernel_initializer=initializers.RandomNormal(mean=0.0, stddev=0.05, seed=None),name='q_values')(net)
 
         # 构建 Keras 模型
         self.model = models.Model(inputs=[states, actions], outputs=Q_values)
 
         # 定义优化器和损失函数，编译模型
-        optimizer = optimizers.Adam()
+        optimizer = optimizers.Adadelta()
         self.model.compile(optimizer=optimizer, loss='mse')
 
         # 计算action的梯度 (Q_value 对 action求导)

@@ -1,6 +1,6 @@
 from quad_controller_rl.agents.base_agent import BaseAgent
-from quad_controller_rl.agents.Actor_hover import Actor
-from quad_controller_rl.agents.Critc_hover import Critic
+from quad_controller_rl.agents.Actor import Actor
+from quad_controller_rl.agents.Critic import Critic
 from quad_controller_rl.agents.ReplayBuffer import ReplayBuffer
 from quad_controller_rl.agents.OUNoise import OUNoise
 
@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-class DDPG_hover(BaseAgent):
+class myDDPG(BaseAgent):
 
     def __init__(self, task):
 
@@ -17,7 +17,7 @@ class DDPG_hover(BaseAgent):
         self.action_size = np.prod(self.task.action_space.shape)
 
         # 限制状态和动作空间
-        self.limit_state_size = 5
+        self.limit_state_size = 3
         self.limit_action_size = 1
         self.action_low = self.task.action_space.low[2]
         self.action_high = self.task.action_space.high[2]
@@ -33,7 +33,7 @@ class DDPG_hover(BaseAgent):
         self.target_critic = Critic(self.limit_state_size, self.limit_action_size)
         # 设定超参数
         self.batch_size = 150
-        self.buffer_size = 5000
+        self.buffer_size = 10000
         self.soft_params = 0.005
         self.gamma = 0.99
         # 设定缓存区
@@ -60,17 +60,15 @@ class DDPG_hover(BaseAgent):
         if memorySize >= self.batch_size:
             expriences = self.memory.sample(batch_size=self.batch_size)
             self.learn(expriences)
-
-          
+            
         # 最后返回完整的动作向量
         complete_action = self.postprocess_action(action)
-        #print(complete_action)
         return complete_action
 
     def act(self, state):
         # 调用Actor,把当前状态（向量）作为输入，得到根据当前策略所选择的动作（向量）
         input_state = np.array(state)
-        # add some noise
+        # 加入随机噪点
         action = self.local_actor.model.predict(input_state) + self.noise.sample()  
         return action.astype(np.float32)
 
@@ -120,10 +118,10 @@ class DDPG_hover(BaseAgent):
         self.soft_update(self.local_critic, self.target_critic)
         self.soft_update(self.local_actor, self.target_actor)
 
-    """限制状态空间，把task传来的8维状态向量降到5维（z,ox,oy,oz,vel）"""
+    """限制状态空间，把task传来的8维状态向量降到3维（z,vel,linear_acceleration.z）"""
     def preprocess_state(self, raw_state):
         state = np.array([raw_state])
-        return state[:, 2:7]
+        return state[:, 2:5]
 
     """把1维动作向量扩展到6维（剩下维度都补零），以供返回给task"""
 

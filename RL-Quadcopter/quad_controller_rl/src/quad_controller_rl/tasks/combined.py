@@ -6,7 +6,7 @@ from geometry_msgs.msg import Vector3, Point, Quaternion, Pose, Twist, Wrench
 from quad_controller_rl.tasks.base_task import BaseTask
 
 
-class Hover(BaseTask):
+class Combined(BaseTask):
     """Simple task where the goal is to lift off the ground and reach a target height."""
 
     def __init__(self):
@@ -14,38 +14,35 @@ class Hover(BaseTask):
         cube_size = 300.0  # env is cube_size x cube_size x cube_size
         self.observation_space = spaces.Box(
             np.array([- cube_size / 2, - cube_size / 2,       0.0, -1.0, -1.0, -1.0, -1.0]),
-            np.array([  cube_size / 2,   cube_size / 2, cube_size,  1.0,  1.0,  1.0,  1.0]))
-        #print("Hover(): observation_space = {}".format(self.observation_space))  # [debug]
+            np.array([  cube_size / 2,   cube_size / 2, cube_size,  1.0,  1.0,  1.0,  1.0]))   
 
         # Action space: <force_x, .._y, .._z, torque_x, .._y, .._z>
         max_force = 23.0
         max_torque = 25.0
         self.action_space = spaces.Box(
             np.array([-max_force, -max_force, -max_force, -max_torque, -max_torque, -max_torque]),
-            np.array([ max_force,  max_force,  max_force,  max_torque,  max_torque,  max_torque]))
-        #print("Hover(): action_space = {}".format(self.action_space))  # [debug]
+            np.array([ max_force,  max_force,  max_force,  max_torque,  max_torque,  max_torque])) 
 
         # Task-specific parameters
         self.velocity = 0.0
-        self.max_duration = 5.0  # secs
-        self.target_z = 10.0
-        self.takeoff_limit = 5.0
-        self.height_limit=20.0
+        self.max_duration = 17.0  # secs
+        self.start_z=0.0
         self.target_hit=0
-        self.last_time=0.0
+        self.last_time=0.0 # secs
         self.last_height=0.0
+        self.target_z=10.0
+        self.takeoff_time=5.0
+        self.hover_time=10.0 # secs
 
           # 记录阶段性变量
         self.episode=0
         self.accumulated_rewards=0 # 每个阶段的累积奖励
         self.total_rewards=[]  # 存储各阶段累积奖励的数组，长度与episode的个数对应
-        self.actions=[]
-        self.states=[]
 
     def reset(self):
         # Nothing to reset; just return initial condition
         return Pose(
-                position=Point(0.0, 0.0, np.random.normal(0.5, 0.1)),
+                position=Point(0.0, 0.0, np.random.normal(0.5, 0.1)),  
                 orientation=Quaternion(0.0, 0.0, 0.0, 0.0),
             ), Twist(
                 linear=Vector3(0.0, 0.0, 0.0),
@@ -58,7 +55,6 @@ class Hover(BaseTask):
             fileObject.write(str(r)+" ,") 
         fileObject.close()
         
-
     def update(self, timestamp, pose, angular_velocity, linear_acceleration):
         done = False
 
@@ -70,22 +66,34 @@ class Hover(BaseTask):
         self.last_height = pose.position.z
         self.last_time = timestamp
         
-        """高度偏离惩罚"""
-        reward=-abs(self.target_z-pose.position.z)*20
-        
-        """加速度惩罚"""
-        if timestamp>1:
-            reward-=abs(linear_acceleration.z)*100
+        reward=0
+         """起飞"""
+        if timestamp < self.takeoff_time and pose.position.z < self.target_z:
+            reward-=min(abs(self.target_z - pose.position.z), 20.0) 
             
-        """高度目标奖励,速度惩罚"""
-        if abs(pose.position.z-self.target_z) < 0.3:
-            self.target_hit+=1
-            reward+=10*(self.target_hit)**2
-            reward-=abs(self.velocity)*100
-            
-        """阶段结束条件"""
-        if pose.position.z > self.height_limit:
+        """检查是否成功起飞"""
+        if timestamp > self.takeoff_time and pose.position.z<self.target_z:
             done=True
+            
+        """悬停"""
+        if pose.position.z >= self.target_z and timestamp < self.hover_time:
+            reward-=abs(self.target_z-pose.position.z)*2
+            reward-=abs(linear_acceleration.z)*10
+            if abs(pose.position.z-self.target_z) < 0.3:
+                self.target_hit+=1
+                reward+=2*(self.target_hit)**2
+                reward-=abs(self.velocity)*20
+        
+        """降落"""
+        if timestamp > self.hover_time:
+            if self.velocity > 0:
+                reward-=abs(self.velocity)*2
+            else:
+                reward-=abs(self.velocity-0.9)
+            if linear_acceleration.z < 0.0 and abs(linear_acceleration.z)<1.0:
+                reward+=10
+                
+        """阶段结束条件"""
         if timestamp > self.max_duration:
             done=True
 
@@ -94,8 +102,6 @@ class Hover(BaseTask):
                           self.velocity,linear_acceleration.z,pose.orientation.x, pose.orientation.y, 
                           pose.orientation.z, pose.orientation.w])
         action=self.agent.step(state, reward, done)
-        self.actions.append(action)
-        self.states.append(self.velocity)
         
         if done:
             self.target_hit=0
@@ -105,8 +111,7 @@ class Hover(BaseTask):
             self.total_rewards.append(self.accumulated_rewards)
             self.accumulated_rewards=0
             self.save_records()
-            self.save_actions()
-            self.save_states()
+
         else:
             self.accumulated_rewards+=reward
 

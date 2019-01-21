@@ -1,0 +1,4 @@
+- myDDPG.py 是实现hover,landing,combined三个任务的智能体主程序，DDPG_takeoff.py是实现起飞任务的主程序
+（因为先创建了DDPG_takeoff.py，后面做hover任务的时候发现原有方案需要修改，重新创建了智能体myDDPG，而后的landing和combine任务用该智能体都可以实现，而最开始的takeoff任务就保留原来的程序没有再做修改）
+- Actor.py和Crtic.py分别是行动者和评论者模型程序，通过myDDPG.py调用，Actor_takeoff和Critic_takeoff则分别为DDPG_takeoff调用的相应模型程序；
+- OUNoise.py是噪点生成器，ReplayBuffer.py是经验回放机制程序，为myDDPG.py和DDPG_takeoff.py共同调用

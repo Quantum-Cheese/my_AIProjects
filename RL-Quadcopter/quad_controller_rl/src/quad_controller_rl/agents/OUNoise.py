@@ -3,7 +3,7 @@ import numpy as np
 class OUNoise:
     """Ornstein-Uhlenbeck process."""
 
-    def __init__(self, size, mu=None, theta=0.15, sigma=0.3):
+    def __init__(self, size, mu=None, theta=0.1, sigma=0.3):
         """Initialize parameters and noise process."""
         self.size = size
         self.mu = mu if mu is not None else np.zeros(self.size)

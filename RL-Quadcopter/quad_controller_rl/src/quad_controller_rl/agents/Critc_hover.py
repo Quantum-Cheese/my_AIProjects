@@ -26,15 +26,15 @@ class Critic:
         states = layers.Input(shape=(self.state_size,), name='states')
         actions = layers.Input(shape=(self.action_size,), name='actions')
 
+        reg=regularizers.l2(0.00001)
+        
         # Add hidden layer(s) for state pathway
-        net_states = layers.Dense(units=32, activation='relu')(states)
-        net_states = layers.Dense(units=64, activation='relu')(net_states)
+        net_states = layers.Dense(units=16, activation='relu',kernel_regularizer=reg)(states)
+        net_states = layers.Dense(units=8, activation='relu',kernel_regularizer=reg)(net_states)
 
         # Add hidden layer(s) for action pathway
-        net_actions = layers.Dense(units=32, activation='relu')(actions)
-        net_actions = layers.Dense(units=64, activation='relu')(net_actions)
-
-        # Try different layer sizes, activations, add batch normalization, regularizers, etc.
+        net_actions = layers.Dense(units=8, activation='relu',kernel_regularizer=reg)(actions)
+        # net_actions = layers.Dense(units=16, activation='relu',kernel_regularizer=reg)(actions)
 
         # Combine state and action pathways
         net = layers.Add()([net_states, net_actions])
@@ -49,7 +49,7 @@ class Critic:
         self.model = models.Model(inputs=[states, actions], outputs=Q_values)
 
         # Define optimizer and compile model for training with built-in loss function
-        optimizer = optimizers.Adadelta(lr=1.0, rho=0.95, epsilon=None, decay=0.0)
+        optimizer = optimizers.Adadelta()
         self.model.compile(optimizer=optimizer, loss='mse')
 
         # Compute action gradients (derivative of Q values w.r.t. to actions)

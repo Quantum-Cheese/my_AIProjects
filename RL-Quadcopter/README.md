@@ -1,60 +1,60 @@
-# DeepRL Quadcopter Controller
+# DeepRL 四轴飞行器控制器
 
-_Teach a Quadcopter How to Fly!_
+_指导四轴飞行器学会飞行！_
 
-In this project, you will design a Deep Reinforcement Learning agent to control several quadcopter flying tasks, including take-off, hover and landing.
-
-
-# Table of Contents
-
-- [Install](#install)
-- [Download](#download)
-- [Develop](#develop)
-- [Submit](#submit)
+在本次项目中，你将设计一个深度强化学习智能体，来控制几个四轴飞行器的飞行任务，包括起飞、悬停和着陆。
 
 
-# Install
+# 目录
 
-This project uses ROS (Robot Operating System) as the primary communication mechanism between your agent and the simulation. You can either install it on your own machine ("native install"), or use a Udacity-provided Virtual Machine (recommended).
-
-## ROS Virtual Machine
-
-Download the compressed VM disk image and unzip it:
-
-- Compressed VM Disk Image: [RoboVM_V2.1.0.zip](https://s3-us-west-1.amazonaws.com/udacity-robotics/Virtual+Machines/Lubuntu_071917/RoboVM_V2.1.0.zip)
-- MD5 checksum: `MD5(Ubuntu 64-bit Robo V2.1.0.ova)= 95bfba89fbdac5f2c0a2be2ae186ddbb`
-
-You will need a Virtual Machine player to run the VM, such as VMWare or VirtualBox:
-
-- [VMWare](http://www.vmware.com/): If you use a Windows/Linux system, you can get [Workstation Player](https://www.vmware.com/products/workstation-player/workstation-player-evaluation.html) for free, or if you're on a Mac, you can get a trial of [Fusion](https://www.vmware.com/products/fusion.html).
-- [VirtualBox](https://www.virtualbox.org/): Download and install the appropriate version for your system.  On a Mac, you will most likely need to update security settings to allow for a proper installation, as you may otherwise have issues with the Kernal drivers not being installed.  When installing VitualBox, follow the directions [here](https://apple.stackexchange.com/questions/300510/virtualbox-5-1-8-installation-didnt-install-kernel-extensions-how-do-i-fix-thi), and allow 'Oracle America' to load inside of Preferences > Security & Privacy > General.
-
-Open your VM player, and then "Open" / "Import" the VM disk image that you just unzipped (the `.ova` file).
-
-Configure the settings for your VM to allocate at least 2 processors and 4GB of RAM (more the merrier!). Now launch the VM, and follow the on-screen instructions for one-time setup steps.
-
-- Username: `robond`
-- Password: `robo-nd`
-
-To open a terminal in your VM, press `Ctrl+Alt+T`. If prompted "Do you want to source ROS?", answer `y` (yes). This is where you will execute your project code.
-
-## ROS Native Install
-
-If you choose to install ROS (Robot Operating System) on your own machine, it is recommended that you use Ubuntu 16.04 LTS as your operating system. To install ROS, please follow the instructions here: [ROS Installation](http://wiki.ros.org/kinetic/Installation)
-
-_Note: This method is not supported by Udacity. If you have trouble performing a native install of ROS, please visit [ROS answers](http://answers.ros.org/questions/) or you can try troubleshooting your install with other students in the Udacity Robotics Slack community ([robotics.udacity.com](https://www.robotics.udacity.com)) in the **#ros** channel._
+- [安装](#install)
+- [下载](#download)
+- [开发](#develop)
+- [提交](#submit)
 
 
-# Download
+# 安装
 
-## Project Code
+本项目使用 ROS（机器人操作系统）作为你的智能体和模拟之间的主要沟通机制。你可以在你的电脑本地安装 ROS，或是使用优达学城提供的虚拟机（推荐）。
 
-On the machine where you have installed ROS (a VM, or your local machine), create a directory named `catkin_ws`, and inside it create a subdirectory named `src`. If you're using a VM, you can also share a folder on your file-system between the host and VM. That might make it easier for you to prepare your report and submit your project for review.
+## ROS 虚拟机
+
+下载压缩的 VM 磁盘镜像并解压：
+
+- 压缩的 VM 磁盘镜像：[RoboVM_V2.1.0.zip](https://s3.cn-north-1.amazonaws.com.cn/static-documents/nd101/DQN/RoboVM_V2.1.0.zip)
+- MD5 校验和：`MD5(Ubuntu 64-bit Robo V2.1.0.ova)= 95bfba89fbdac5f2c0a2be2ae186ddbb`
+
+你还需要一个虚拟机软件来运行 VM，比如 VMWare 或 VirtualBox：
+
+- [VMWare](http://www.vmware.com/)：如果你使用 Windows/Linux 系统，可以免费下载  [Workstation Player](https://www.vmware.com/products/workstation-player/workstation-player-evaluation.html)，如果你使用的是 Mac，可以下载 [Fusion](https://www.vmware.com/products/fusion.html) 的试用版。
+- [VirtualBox](https://www.virtualbox.org/)：请下载并安装与你的系统适配的版本。在 Mac 上，你需要更新安全设置来允许软件安装，否则你将由于核心驱动问题而安装失败。在安装 VitualBox 时，请参照 [这里](https://apple.stackexchange.com/questions/300510/virtualbox-5-1-8-installation-didnt-install-kernel-extensions-how-do-i-fix-thi) 的说明，并在偏好设置 > 安全性与隐私 > 通用允许 'Oracle America' 下载。
+
+打开你的 VM 运行软件，接着“打开”/“导入”你刚刚解压的 VM 磁盘镜像（`.ova` 文件）。
+
+请配置你的虚拟机，并分配至少 2 个处理器和 4GB RAM 内存（越多越好！）。现在运行 VM，并根据屏幕上的指示进行配置。
+
+- 用户名：`robond`
+- 密码：`robo-nd`
+
+要想在 VM 中打开终端，请按下 `Ctrl+Alt+T`。如果系统提示“Do you want to source ROS?”，选择 `y` （是）。你将在这里执行项目代码。
+
+## ROS 本地安装
+
+如果你选择在你的电脑本地安装 ROS，我们建议你使用 Ubuntu 16.04 LTS 作为操作系统。请参照 [ROS 安装指南](http://wiki.ros.org/kinetic/Installation)进行安装。
+
+_请注意：优达学城并不支持此方法。如果你在本地安装 ROS 时出现问题，请访问 [ROS 疑难解答](http://answers.ros.org/questions/)或优达学城机器人开发的 Slack 社区（[robotics.udacity.com](https://www.robotics.udacity.com)），并在 **#ros** 频道中与其他学员讨论解决方法。_
 
 
-Now clone this repository or download it inside the `src` directory. This is where you will develop your project code. 
+# 下载
 
-So, to do the above, inside the VM terminal:
+## 项目代码
+
+在安装了 ROS （虚拟机或本地计算机）的机器中创建名为 `catkin_ws` 的目录，并在该目录下创建名为 `src` 的子目录。如果你使用的是虚拟机，你也可以在主机和虚拟机的文件系统里共享文件夹。使用这种方法，你可以更方便地撰写报告和提交项目以供审阅。
+
+
+现在请将这个代码库克隆或下载至 `src` 目录下。你将在这里开发你的项目代码。
+
+请在终端内输入：
 
 ```bash
 $ cd ~
@@ -65,7 +65,7 @@ $ cd src
 $ git clone https://github.com/udacity/RL-Quadcopter.git
 ```
 
-Your folder structure should look like the following (ROS has a fairly complicated build system, as you will see!):
+你的目录结构应如下所示（ROS 的编译系统相当复杂，在之后的内容中你也将了解到这一点）：
 
 ```
 - ~/catkin_ws/
@@ -75,126 +75,127 @@ Your folder structure should look like the following (ROS has a fairly complicat
         - ...
 ```
 
-The root of this structure (`catkin_ws`) is a [catkin workspace](http://wiki.ros.org/catkin/workspaces), which you can use to organize and work on all your ROS-based projects (the name `catkin_ws` is not mandatory - you can change it to anything you want).
+该结构的根目录（`catkin_ws`）是一个 [catkin workspace](http://wiki.ros.org/catkin/workspaces)，你可以使用它来管理和进行所有基于 ROS 的项目（文件夹名 `catkin_ws` 并非强制，你可以随意更改）。
 
-## Python Packages
+## Python 包
 
-First, install `pip3`:
+首先，安装 `pip3`：
 
 ```bash
 $ sudo apt-get update
 $ sudo apt-get -y install python3-pip
 ```
 
-Next, install the Python packages necessary for this project, listed in `requirements.txt`:
+然后，安装本项目所需的 Python 包，已在 `requirements.txt` 中列出：
 
 ```bash
 $ pip3 install -r requirements.txt
 ```
 
-You may need some additional packages, depending on what framework or library you intend to use, e.g. TensorFlow, Keras, PyTorch, etc. Now is a good time to ensure you have these installed.
+根据你所使用的框架和库，你也许还需要一些额外的包，比如 TensorFlow，Keras，PyTorch 等等。现在请确保你已经安装了这些包。
 
-## Simulator
+## 模拟器
 
-Download the Udacity Quadcopter Simulator, nicknamed **DroneSim**, for your host computer OS [here](https://github.com/udacity/RoboND-Controls-Lab/releases). 
+为你的主机 OS 在[这里](https://github.com/udacity/RoboND-Controls-Lab/releases)下载优达学城四轴飞行器模拟器，它的昵称为 **DroneSim**。
 
-To start the simulator, simply run the downloaded executable file. You may need to run the simulator _after_ the `roslaunch` step mentioned below in the Run section, so that it can connect to a running ROS master.
+要想打开模拟器，你只需运行下载的可执行文件即可。你也许需要在运行部分介绍的 `roslaunch` 步骤_之后_打开模拟器，便于将它连接至正在运行的 ROS master。
 
-_Note: If you are using a Virtual Machine (VM), you cannot run the simulator inside the VM. You have to download and run the simulator for your **host operating system** and connect it to your VM (see below)._
+_请注意：如果你使用的是虚拟机（VM），你无法在 VM 内运行模拟器。你需要在**主机操作系统**中下载并运行模拟器，再将它连接至虚拟机（见下文）_
 
-### Connecting the Simulator to a VM
+### 将模拟器连接至 VM
 
-If you are running ROS in a VM, there are a couple of steps necessary to make sure it can communicate with the simulator running on your host system. If not using a VM, these steps are not needed.
+如果你在虚拟机内运行 ROS，你需要通过几个步骤来保证它能与主机系统中的模拟器连接。如果你没有使用虚拟机，可以忽略这些步骤。
 
-#### Enable Networking on VM
+#### 在 VM 中允许网络连接
 
-- **VMWare**: The default setting should work. To verify, with the VM runnning, go to the Virtual Machine menu > Network Adapter. NAT should be selected.
-- **VirtualBox**:
-  1. In the VirtualBox Manager, go to Global Tools (top-right corner, above the penguin) > Host Network Manager.
-  2. Create a new Host-only Network. You can leave the default settings, e.g. Name = "vboxnet0", Ipv4 Address/Mask = "192.168.56.1/24", and DHCP Server enabled.
-  3. Switch back to Machine Tools, and with your VM selected, open its Settings.
-  4. Go to the Network tab, change "Attached to" (network type) to "Host-only Adapter", and pick "vboxnet0" from the "Name" dropdown.
-  5. Hit Ok to save, and (re)start the VM.
+- **VMWare**：使用默认设定即可。为了验证，你可以在运行虚拟机的情况下，打开虚拟机的菜单 > 网络适配器。NAT 一栏应被勾选。
+- **VirtualBox**：
+  1. 在 VirtualBox Manager 中，打开 Global Tools（右上角，penguin 上方）> Host Network Manager。
+  2. 创建一个新的主机模式网络。你可以使用默认配置，比如 Name = "vboxnet0"，Ipv4 Address/Mask = "192.168.56.1/24"，并允许 DHCP 服务器。
+  3. 切换回 Machine Tools，选择虚拟机并打开它的设定。
+  4. 打开 Network 标签页，将 "Attached to"（网络类型）改成 "Host-only Adapter"，并选择 "Name" 下的 "vboxnet0"。
+  5. 点击 Ok 进行保存，并启动（重启）虚拟机。
 
-#### Obtain IP Addresses for Host and VM
+#### 为主机和虚拟机获取 IP 地址
 
-In a terminal on your host computer, run `ifconfig`. It will list all the network interfaces available, both physical and virtual. There should be one named something like `vmnet` or `vboxnet`. Note the IP address (`inet` or `inet addr`) mentioned for that interface, e.g. `192.168.56.1`. This is your **Host IP address**.
+在主机终端中运行 `ifconfig`。这将显示所有可用的网络接口，包括物理接口和虚拟接口。其中应有名为 `vmnet` 或 `vboxnet` 的接口。请记下该接口的 IP 地址（`inet` 或 `inet addr`），比如 `192.168.56.1`，这是你的**主机 IP 地址**。
 
-Do the same inside the VM. Here the interface may have a different name, but the IP address should have a common prefix. Note down the complete IP address, e.g. `192.168.56.101` - this your **VM IP address**.
+请在虚拟机内重复该步骤。在这里接口名称也许有所不同，但 IP 地址的前缀相同。请记下完整的 IP 地址，比如 `192.168.56.101`，这是你的**虚拟机 IP 地址**。
 
-#### Edit Simulator Settings
+#### 编辑模拟器设定
 
-Inside the simulator's `_Data` or `/Contents` folder (on Mac, right-click the app > Show Package Contents), edit `ros_settings.txt`:
+在模拟器的 `_Data` 或 `/Contents` 文件夹内（在 Mac中请右键点击 app > 显示包目录），编辑 `ros_settings.txt`：
 
-- Set `vm-ip` to the **VM IP address** and set `vm-override` to `true`.
-- Set `host-ip` to the **Host IP address** and set `host-override` to `true`.
+- 将 `vm-ip` 设置为 **虚拟机 IP 地址**，并将 `vm-override` 设置为 `true`。
+- 将`host-ip` 设置为 **主机 IP 地址**，并将 `host-override` 设置为 `true`。
 
-The host and/or VM's IP address can change when it is restarted. If you are experiencing connectivity problems, be sure to check that the actual IP addresses match what you have in `ros_settings.txt`.
+主机和/或虚拟机的 IP 地址可以在重启时改变。如果你遇到任何连接问题，请确保实际的 IP 地址与 `ros_settings.txt` 中的一致。
 
 
-# Develop
+# 开发
 
-Starter code is provided in `quad_controller_rl/` with all the Python modules (`.py` files) under the `src/quad_controller_rl/` package, and the main project notebook under `notebooks/`. Take a look at the files there, but you do not have to make any changes to the code at this point. Complete the following two steps first (**Build** and **Run**), to ensure your ROS installation is working correctly.
+我们已在 `quad_controller_rl/` 中提供了启动代码，`src/quad_controller_rl/` 下也包含了所有的 Python 模块。此外，`notebooks/` 文件夹下是主要的项目 notebook。请查看这些文件，但此刻你并不需要更改其中的代码。首先请完成下面两个步骤（**建立**和**运行**），保证你的 ROS 正确安装。
 
-## Build
+## 建立
 
-To prepare your code to run with ROS, you will first need to build it. This compiles and links different modules ("ROS nodes") needed for the project. Fortunately, you should only need to do this once, since changes to Python scripts don't need recompilation.
+要想在 ROS 中运行你的代码，你首先需要建立它。这需要编译和连接项目所需的不同模块（“ROS 节点”）。幸运的是，该步骤只需要进行一次，因为对 Python 脚本进行的更改不需要重新编译。
 
-- Go to your catkin workspace (`catkin_ws/`):
+- 打开你的 catkin workspace (`catkin_ws/`)：
 
 ```bash
 $ cd ~/catkin_ws/
 ```
 
-- Build ROS nodes:
+- 建立 ROS 节点：
 
 ```bash
 $ catkin_make
 ```
 
-- Enable command-line tab-completion and some other useful ROS utilities:
+- 启用命令行 tab 补全功能和其它实用的 ROS 应用：
 
 ```bash
 $ source devel/setup.bash
 ```
 
-## Run
+## 运行
 
-To run your project, start ROS with the `rl_controller.launch` file:
+为了运行你的项目，请打开 `rl_controller.launch` 文件启动 ROS：
 
 ```bash
 $ cd ~/catkin_ws/src/RL-Quadcopter/quad_controller_rl/launch
 $ roslaunch quad_controller_rl rl_controller.launch
 ```
 
-You should see a few messages on the terminal as different nodes get spun up. Now you can run the simulator, which is a separate Unity application (note that you must start ROS first, and then run the simulator). Once the simulator initializes itself, you should start seeing additional messages in your ROS terminal, indicating a new episode starting every few seconds. The quadcopter in the simulation should show its blades running as it gets control inputs from the agent, and it should reset at the beginning of each episode.
+当不同节点启动时，你可以在终端中看见一些信息。此时你可以运行模拟器，这是一个单独的 Unity 应用（请注意，你必须先启动 ROS，再运行模拟器）。在模拟器初始化完成后，你将在 ROS 终端中看见其他信息，表示每隔几秒飞行器都会进入新的阶段。当飞行器接收到来自智能体的控制输入时，模拟器中飞行器的螺旋桨应当开始转动，并且这应当在每个阶段开始时重置。
 
 
-Tip: By defaults, you will need to follow the steps for build and run each time that you wish to run your quadcopter simulation.  If you get tired of this two-step startup process, edit the `quad_controller_rl/scripts/drone_sim` script and enter a command that runs the simulator application. (An example can be found [here](https://discussions.udacity.com/t/importerror-when-running-roslaunch-quad-controller-rl-rl-controller-launch/569530/2).  It will then be launched automatically with ROS!
+小贴士：根据默认设置，每当你想要运行飞行器的模拟器时，你都需要按步骤建立和运行。如果你不想重复这两个步骤，可以编辑 `quad_controller_rl/scripts/drone_sim` 脚本，输入运行模拟器应用的命令。[这里](https://discussions.udacity.com/t/importerror-when-running-roslaunc-quad-controller-rl-rl-controller-launch/569530/2)有一个范例。接着，ROS 将自动启动模拟器。
 
-_Note: If you want to learn more about how ROS works and how you can use it for robotics applications, you may enroll in Udacity's [Robotics Nanodegree Program](https://www.udacity.com/robotics) and can take the [ROS Essentials](https://classroom.udacity.com/nanodegrees/nd209/parts/af07ae99-7d69-4b45-ab98-3fde8b576a16) module._
 
-## Implement
+_请注意：如果你想了解更多有关 ROS 的信息，以及如何将它应用于机器学习的应用中，你可以加入优达学城的 [机器人开发纳米学位](https://cn.udacity.com/course/robotics-nanodegree--nd209)并学习 [ROS 基础知识]( https://classroom.udacity.com/nanodegrees/nd209/parts/af07ae99-7d69-4b45-ab98-3fde8b576a16)模块。_
 
-Once you have made sure ROS and the simulator are running without any errors, and that they can communicate with each other, try modifying the code in `agents/policy_search.py` - this is a sample agent that runs by default (e.g. add a `print` statement). Every time you make a change, you will need to stop the simulator (press `Esc` with the simulator window active), and shutdown ROS (press `Ctrl+C` in the terminal). Save your change, and `roslaunch` again.
+## 实现
 
-Now you should be ready to start coding! Open the project notebook for further instructions (assuming you are in your catkin workspace):
+一旦你确定 ROS 与模拟器都能顺利运行，并且相互连通，请尝试修改 `agents/policy_search.py` 中的代码（比如添加一条 `print` 语句）。这是一个默认运行的智能体模板。每当你做出改变，你都需要停止模拟器（在模拟器窗口下按 `Esc` 键），并关闭 ROS（在终端内按 `Ctrl+C` 键）。保存你的修改，并再次 `roslaunch`。
+
+现在你应该准备好编写代码了！打开项目的 notebook 查看更多说明（假设你在你的 catkin workspace 中）：
 
 ```bash
 $ jupyter notebook src/RL-Quadcopter/quad_controller_rl/notebooks/RL-Quadcopter.ipynb
 ```
 
-# Submit
+# 提交
 
-Complete the required sections in the notebook. Once done, save/export the notebook as a PDF or HTML file. This will serve as your project report.
+请按要求完成 notebook。完成之后，请将 notebook 保存/导出为 PDF 或 HTML 文件。这将作为你的项目报告。
 
-If you are enrolled in a Udacity Nanodegree program, you can submit your completed project for review. Prepare and upload a zip file that includes the following:
+如果你加入了优达学城的纳米学位，你可以在完成项目后提交审阅。你上传的压缩文件应包含以下内容：
 
-- `RL-Quadcopter.ipynb`: Project notebook with all sections completed.
-- `RL-Quadcopter.pdf` / `RL-Quadcopter.html`: PDF or HTML report (which can be an export of the notebook).
-- `quad_controller_rl/`: Python package with your code in the following sub-packages:
-  - `tasks/`: Your implementation of each task required for this project.
-  - `agents/`: Agents you've implemented for the corresponding tasks.
-  - Any other supporting code or other files used by your project.
+- `RL-Quadcopter.ipynb`：项目的notebook，所有部分均已完成。
+- `RL-Quadcopter.pdf` / `RL-Quadcopter.html`：PDF 或 HTML 报告（可以是 notebook 的导出文件）
+- `quad_controller_rl/`：Python 包，以下分包中包含你的代码：
+  - `tasks/`：本项目要求的每个任务的实现。
+  - `agents/`：你为相应任务实现的智能体。
+  - 项目中使用的其他辅助代码或文件。
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>. Please refer to [Udacity Terms of Service](https://www.udacity.com/legal) for further information.

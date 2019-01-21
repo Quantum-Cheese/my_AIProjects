@@ -28,14 +28,16 @@ class Actor:
         """Build an actor (policy) network that maps states -> actions."""
         # Define input layer (states)
         states = layers.Input(shape=(self.state_size,), name='states')
-
+        
+        # Batch Normalization
+        net = layers.BatchNormalization()(states)
+        
         # Add hidden layers
-        net = layers.Dense(units=32, activation='relu')(states)
-        net = layers.Dense(units=64, activation='relu')(net)
-        net = layers.Dense(units=32, activation='relu')(net)
-
-        # Try different layer sizes, activations, add batch normalization, regularizers, etc.
-
+        net = layers.Dense(units=8, activation='relu')(net)
+        net = layers.Dense(units=8, activation='relu')(net)
+        net = layers.Dense(units=8, activation='tanh')(net)
+        #net = layers.Dropout(0.2)(net)
+ 
         # Add final output layer with sigmoid activation
         raw_actions = layers.Dense(units=self.action_size, activation='sigmoid',
             name='raw_actions')(net)
@@ -54,7 +56,7 @@ class Actor:
         # Incorporate any additional losses here (e.g. from regularizers)
 
         # Define optimizer and training function
-        optimizer = optimizers.Adadelta(lr=1.0, rho=0.95, epsilon=None, decay=0.0)
+        optimizer = optimizers.Adam(lr=0.0001)
         updates_op = optimizer.get_updates(params=self.model.trainable_weights, loss=loss)
         self.train_fn = K.function(
             inputs=[self.model.input, action_gradients, K.learning_phase()],
