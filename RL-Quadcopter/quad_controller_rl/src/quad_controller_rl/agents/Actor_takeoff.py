@@ -7,12 +7,12 @@ class Actor:
 
     def __init__(self, state_size, action_size, action_low, action_high):
 
-         """参数
+        """Params
         ======
-            state_size (int): 每个state的维度
-            action_size (int): 每个action的维度
-            action_low (array): action中每个维度的最小值
-            action_high (array): action中每个维度的最大值
+            state_size (int): Dimension of each state
+            action_size (int): Dimension of each action
+            action_low (array): Min value of each action dimension
+            action_high (array): Max value of each action dimension
         """
         self.state_size = state_size
         self.action_size = action_size
@@ -20,35 +20,40 @@ class Actor:
         self.action_high = action_high
         self.action_range = self.action_high - self.action_low
 
+        # Initialize any other variables here
+
         self.build_model()
 
     def build_model(self):
-       """构建actor网络模型"""
-        # 定义输入层 (states)
+        """Build an actor (policy) network that maps states -> actions."""
+        # Define input layer (states)
         states = layers.Input(shape=(self.state_size,), name='states')
 
-        # 隐藏层
+        # Add hidden layers
         net = layers.Dense(units=32, activation='relu')(states)
         net = layers.Dense(units=64, activation='relu')(net)
         net = layers.Dense(units=32, activation='relu')(net)
 
-        # 输出层
+        # Try different layer sizes, activations, add batch normalization, regularizers, etc.
+
+        # Add final output layer with sigmoid activation
         raw_actions = layers.Dense(units=self.action_size, activation='sigmoid',
             name='raw_actions')(net)
 
-        # 把原始输出（0到1之间）值转化为真实值
+        # Scale [0, 1] output for each action dimension to proper range
         actions = layers.Lambda(lambda x: (x * self.action_range) + self.action_low,
             name='actions')(raw_actions)
 
-        # 构建Keras模型
+        # Create Keras model
         self.model = models.Model(inputs=states, outputs=actions)
 
-         # 使用动作值 (Q value) 的梯度定义损失函数
-        action_gradients = layers.Input(shape=(s
+        # Define loss function using action value (Q value) gradients
         action_gradients = layers.Input(shape=(self.action_size,))
         loss = K.mean(-action_gradients * actions)
 
-        # 定义优化器，训练函数
+        # Incorporate any additional losses here (e.g. from regularizers)
+
+        # Define optimizer and training function
         optimizer = optimizers.Adam()
         updates_op = optimizer.get_updates(params=self.model.trainable_weights, loss=loss)
         self.train_fn = K.function(

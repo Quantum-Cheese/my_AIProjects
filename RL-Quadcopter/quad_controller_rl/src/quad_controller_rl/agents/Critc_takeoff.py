@@ -8,48 +8,54 @@ class Critic:
     def __init__(self, state_size, action_size):
 
         """
-       参数
+        Params
         ======
-            state_size (int): 每个state的维度
-            action_size (int): 每个action的维度
+            state_size (int): Dimension of each state
+            action_size (int): Dimension of each action
         """
         self.state_size = state_size
         self.action_size = action_size
 
+        # Initialize any other variables here
+
         self.build_model()
 
     def build_model(self):
-        """构建评论者网络：把 (state, action) 对映射成 Q-value."""
-        # 定义输入层
+        """Build a critic (value) network that maps (state, action) pairs -> Q-values."""
+        # Define input layers
         states = layers.Input(shape=(self.state_size,), name='states')
         actions = layers.Input(shape=(self.action_size,), name='actions')
 
-        # state子网络的隐藏层
+        # Add hidden layer(s) for state pathway
         net_states = layers.Dense(units=32, activation='relu')(states)
         net_states = layers.Dense(units=64, activation='relu')(net_states)
 
-        # action自网络的隐藏层
+        # Add hidden layer(s) for action pathway
         net_actions = layers.Dense(units=32, activation='relu')(actions)
         net_actions = layers.Dense(units=64, activation='relu')(net_actions)
 
-        # 合并state 和 action 子网络
+        # Try different layer sizes, activations, add batch normalization, regularizers, etc.
+
+        # Combine state and action pathways
         net = layers.Add()([net_states, net_actions])
         net = layers.Activation('relu')(net)
 
-        # 输出层，输出 Q 值
+        # Add more layers to the combined network if needed
+
+        # Add final output layer to prduce action values (Q values)
         Q_values = layers.Dense(units=1, name='q_values')(net)
 
-        # 构建 Keras 模型
+        # Create Keras model
         self.model = models.Model(inputs=[states, actions], outputs=Q_values)
 
-        # 定义优化器和损失函数，编译模型
+        # Define optimizer and compile model for training with built-in loss function
         optimizer = optimizers.Adam()
         self.model.compile(optimizer=optimizer, loss='mse')
 
-        # 计算action的梯度 (Q_value 对 action求导)
+        # Compute action gradients (derivative of Q values w.r.t. to actions)
         action_gradients = K.gradients(Q_values, actions)
 
-        # 定义一个专门获取action梯度的函数 (以供actor模型调用)
+        # Define an additional function to fetch action gradients (to be used by actor model)
         self.get_action_gradients = K.function(
             inputs=[*self.model.input, K.learning_phase()],
             outputs=action_gradients)

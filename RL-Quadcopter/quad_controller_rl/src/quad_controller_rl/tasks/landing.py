@@ -57,6 +57,18 @@ class Landing(BaseTask):
             fileObject.write(str(r)+" ,") 
         fileObject.close()
         
+        
+    def save_actions(self):
+        fileObject = open('/home/robond/catkin_ws/src/RL-Quadcopter/quad_controller_rl/src/quad_controller_rl/records/actions_01.txt', 'w') 
+        for action in self.actions:
+            fileObject.write(str(action)+" ,")
+        fileObject.close()
+        
+    def save_states(self):
+        f=open('/home/robond/catkin_ws/src/RL-Quadcopter/quad_controller_rl/src/quad_controller_rl/records/states_01.txt', 'w')
+        for state in self.states:
+            f.write(str(state)+" ,")
+        f.close()
 
     def update(self, timestamp, pose, angular_velocity, linear_acceleration):
         done = False
