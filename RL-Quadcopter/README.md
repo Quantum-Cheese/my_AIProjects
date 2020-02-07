@@ -1,11 +1,11 @@
 # DeepRL Quadcopter Controller
 
-_Teach a Quadcopter How to Fly!_
+_This is for my Udacity Nanodegree Program Machine Learning Engineer ,and it's the final project ._
 
-In this project, you will design a Deep Reinforcement Learning agent to control several quadcopter flying tasks, including take-off, hover and landing.
+In this project, you will teach a quad-copter how to fly by designing a Deep Reinforcement Learning agent to control several quad-copter flying tasks, including take-off, hover and landing.
 
 
-# Table of Contents
+# Table of Contentss
 
 - [Install](#install)
 - [Download](#download)
